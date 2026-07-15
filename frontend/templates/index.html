@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrafficGuard - Traffic Accident Severity Prediction</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Splash Screen -->
+    <div id="splash-screen">
+        <div class="splash-content">
+            <div class="splash-logo">🔴 TrafficGuard</div>
+            <h1 class="splash-title">Traffic Accident Severity Prediction</h1>
+            <p class="splash-subtitle">Machine Learning Powered Risk Assessment</p>
+            
+            <div class="splash-features">
+                <div class="splash-feature">● Machine Learning Powered</div>
+                <div class="splash-feature">● Real-time Risk Assessment</div>
+                <div class="splash-feature">● Data-Driven Insights</div>
+            </div>
+            
+            <div class="splash-stats">
+                <div class="splash-stat">
+                    <div class="splash-stat-value">9,131</div>
+                    <div class="splash-stat-label">Records</div>
+                </div>
+                <div class="splash-stat">
+                    <div class="splash-stat-value">34.0%</div>
+                    <div class="splash-stat-label">Accuracy</div>
+                </div>
+                <div class="splash-stat">
+                    <div class="splash-stat-value">3</div>
+                    <div class="splash-stat-label">Severity Classes</div>
+                </div>
+            </div>
+            
+            <button class="launch-btn" onclick="launchApp()">LAUNCH APP</button>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div id="main-app">
+        <!-- Main Sidebar -->
+        <aside class="main-sidebar">
+            <div class="sidebar-brand">
+                <span>🔴</span>
+                <span>TrafficGuard</span>
+            </div>
+            <nav class="main-nav">
+                <button class="main-nav-item active" onclick="showPage('dashboard')">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-text">Dashboard</span>
+                </button>
+                <button class="main-nav-item" onclick="showPage('predict')">
+                    <span class="nav-icon">🎯</span>
+                    <span class="nav-text">Predict</span>
+                </button>
+                <button class="main-nav-item" onclick="showPage('visualizations')">
+                    <span class="nav-icon">📈</span>
+                    <span class="nav-text">Visualizations</span>
+                </button>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+        <!-- Dashboard Page -->
+        <div id="dashboard-page" class="page active">
+            <h2 style="margin-bottom: 1.5rem; color: var(--primary-crimson);">📊 Live Dashboard Overview</h2>
+            
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card fatal">
+                    <div class="stat-value">3,082</div>
+                    <div class="stat-label">🔴 Fatal Accidents</div>
+                </div>
+                <div class="stat-card serious">
+                    <div class="stat-value">3,027</div>
+                    <div class="stat-label">🟡 Serious Injuries</div>
+                </div>
+                <div class="stat-card minor">
+                    <div class="stat-value">3,022</div>
+                    <div class="stat-label">🟢 Minor Injuries</div>
+                </div>
+                <div class="stat-card today">
+                    <div class="stat-value">9,131</div>
+                    <div class="stat-label">📅 Total Records</div>
+                </div>
+            </div>
+
+            <!-- Charts Grid -->
+            <div class="charts-grid">
+                <div class="chart-container">
+                    <div class="card-header">Severity by Weather</div>
+                    <canvas id="weatherChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <div class="card-header">Severity by Road Type</div>
+                    <canvas id="roadChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Quick Filters -->
+            <div class="card">
+                <div class="card-header">🔍 Quick Insights & Filters</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">📍 Location</label>
+                        <select class="form-select" id="filter-location">
+                            <option value="all">All Locations</option>
+                            <option value="0">Urban</option>
+                            <option value="1">Suburban</option>
+                            <option value="2">Rural</option>
+                            <option value="3">Highway</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">🌤️ Weather</label>
+                        <select class="form-select" id="filter-weather">
+                            <option value="all">All Weather</option>
+                            <option value="0">Clear</option>
+                            <option value="1">Rain</option>
+                            <option value="2">Snow</option>
+                            <option value="3">Fog</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">🛣️ Road Type</label>
+                        <select class="form-select" id="filter-road">
+                            <option value="all">All Road Types</option>
+                            <option value="0">Highway</option>
+                            <option value="1">Intersection</option>
+                            <option value="2">Rural</option>
+                            <option value="3">Urban</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">🚗 Vehicle Type</label>
+                        <select class="form-select" id="filter-vehicle">
+                            <option value="all">All Vehicles</option>
+                            <option value="0">Motorcycle</option>
+                            <option value="1">Car</option>
+                            <option value="2">Truck</option>
+                            <option value="3">Bus</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="margin-top: 1rem; display: flex; gap: 1rem;">
+                    <button class="btn btn-primary" onclick="applyFilters()">Apply Filters</button>
+                    <button class="btn btn-secondary" onclick="resetFilters()">Reset</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Predict Page -->
+        <div id="predict-page" class="page">
+            <h2 style="margin-bottom: 1.5rem; color: var(--primary-crimson);">🎯 Accident Severity Prediction</h2>
+            
+            <div class="prediction-container">
+                <!-- Prediction Form -->
+                <div class="card">
+                    <div class="card-header">Input Accident Details</div>
+                    <form id="prediction-form">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">📍 Location</label>
+                                <select class="form-select" id="location" required>
+                                    <option value="">Select Location</option>
+                                    <option value="0">Urban</option>
+                                    <option value="1">Suburban</option>
+                                    <option value="2">Rural</option>
+                                    <option value="3">Highway</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">🌤️ Weather</label>
+                                <select class="form-select" id="weather" required>
+                                    <option value="">Select Weather</option>
+                                    <option value="0">Clear</option>
+                                    <option value="1">Rain</option>
+                                    <option value="2">Snow</option>
+                                    <option value="3">Fog</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">🛣️ Road Type</label>
+                                <select class="form-select" id="road_type" required>
+                                    <option value="">Select Road Type</option>
+                                    <option value="0">Highway</option>
+                                    <option value="1">Intersection</option>
+                                    <option value="2">Rural</option>
+                                    <option value="3">Urban</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">🚗 Vehicle Type</label>
+                                <select class="form-select" id="vehicle_type" required>
+                                    <option value="">Select Vehicle Type</option>
+                                    <option value="0">Motorcycle</option>
+                                    <option value="1">Car</option>
+                                    <option value="2">Truck</option>
+                                    <option value="3">Bus</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">👤 Driver Age</label>
+                                <input type="number" class="form-input" id="driver_age" min="18" max="69" value="35" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">🏎️ Speed Limit (km/h)</label>
+                                <input type="number" class="form-input" id="speed_limit" min="40" max="100" value="60" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">👥 Casualties Count</label>
+                                <input type="number" class="form-input" id="casualties" min="0" max="4" value="1" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">🕐 Time (HHMM format)</label>
+                                <input type="number" class="form-input" id="time" min="0" max="2359" value="1430" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="predict-btn">🔍 PREDICT SEVERITY</button>
+                    </form>
+                </div>
+
+                <!-- Prediction Results -->
+                <div class="card result-card" id="result-card" style="display: none;">
+                    <div class="card-header">📊 Prediction Analysis</div>
+                    
+                    <div class="result-header">
+                        <div id="severity-badge" class="severity-badge">-</div>
+                        <div style="margin-top: 0.5rem; color: var(--text-grey);">Confidence</div>
+                        <div class="confidence-bar">
+                            <div id="confidence-fill" class="confidence-fill" style="width: 0%"></div>
+                        </div>
+                        <div id="confidence-value" style="font-weight: bold;">0%</div>
+                    </div>
+
+                    <div class="probability-bars">
+                        <h4 style="color: var(--primary-crimson); margin-bottom: 0.5rem;">Probability Distribution</h4>
+                        
+                        <div class="prob-item">
+                            <div class="prob-label">
+                                <span>🔴 Fatal</span>
+                                <span id="prob-fatal">0%</span>
+                            </div>
+                            <div class="prob-bar">
+                                <div id="prob-fill-fatal" class="prob-fill fatal" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="prob-item">
+                            <div class="prob-label">
+                                <span>🟡 Serious Injury</span>
+                                <span id="prob-serious">0%</span>
+                            </div>
+                            <div class="prob-bar">
+                                <div id="prob-fill-serious" class="prob-fill serious" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="prob-item">
+                            <div class="prob-label">
+                                <span>🟢 Minor Injury</span>
+                                <span id="prob-minor">0%</span>
+                            </div>
+                            <div class="prob-bar">
+                                <div id="prob-fill-minor" class="prob-fill minor" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="risk-factors">
+                        <h4>⚠️ Risk Factors</h4>
+                        <div id="risk-factors-list">
+                            <span class="risk-factor">No risk factors identified</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Predictions History -->
+            <div class="card" style="margin-top: 2rem;">
+                <div class="card-header">📋 Recent Predictions History</div>
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Location</th>
+                            <th>Weather</th>
+                            <th>Age</th>
+                            <th>Speed</th>
+                            <th>Severity</th>
+                            <th>Confidence</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-table-body">
+                        <tr>
+                            <td colspan="7" style="text-align: center; color: var(--text-grey);">No predictions yet</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Visualizations Page -->
+        <div id="visualizations-page" class="page">
+            <!-- Horizontal Navigation -->
+            <nav class="viz-navbar">
+                <button class="viz-nav-item active" onclick="showVizPhase('eda')">
+                    <span class="viz-nav-icon">🔍</span>
+                    <span class="viz-nav-text">Exploratory Data Analysis</span>
+                </button>
+                <button class="viz-nav-item" onclick="showVizPhase('feature')">
+                    <span class="viz-nav-icon">⚙️</span>
+                    <span class="viz-nav-text">Feature Engineering</span>
+                </button>
+            </nav>
+
+            <!-- Content Area -->
+            <div class="viz-content">
+                    <h2 style="margin-bottom: 1.5rem; color: var(--primary-crimson);">📈 Comprehensive Data Visualizations</h2>
+                    
+                    <!-- Phase 1: EDA Graphs -->
+                    <div id="phase-eda" class="viz-phase active">
+                        <h3 class="viz-section-title">PHASE 1: EXPLORATORY DATA ANALYSIS (EDA)</h3>
+                
+                <!-- Univariate Analysis -->
+                <div class="viz-subsection">
+                    <h4 class="viz-subsection-title">Univariate Analysis</h4>
+                    <div class="viz-grid">
+                        <div class="viz-card">
+                            <div class="viz-card-header">Pie Charts - Proportion Distribution</div>
+                            <img src="/api/plots/pie_charts.png" alt="Pie Charts" class="viz-image" loading="lazy">
+                        </div>
+                        <div class="viz-card">
+                            <div class="viz-card-header">Violin Plots - Distribution with Density</div>
+                            <img src="/api/plots/violin_plots.png" alt="Violin Plots" class="viz-image" loading="lazy">
+                        </div>
+                        <div class="viz-card">
+                            <div class="viz-card-header">Grouped Violin Plots - By Severity</div>
+                            <img src="/api/plots/grouped_violin_plots.png" alt="Grouped Violin Plots" class="viz-image" loading="lazy">
+                        </div>
+                        <div class="viz-card">
+                            <div class="viz-card-header">Univariate Analysis - Numerical Features</div>
+                            <img src="/api/plots/univariate_analysis.png" alt="Univariate Analysis" class="viz-image" loading="lazy">
+                        </div>
+                        <div class="viz-card">
+                            <div class="viz-card-header">Categorical Distribution</div>
+                            <img src="/api/plots/categorical_distribution.png" alt="Categorical Distribution" class="viz-image" loading="lazy">
+                        </div>
+                        <div class="viz-card">
+                            <div class="viz-card-header">Severity Distribution</div>
+                            <img src="/api/plots/severity_distribution.png" alt="Severity Distribution" class="viz-image" loading="lazy">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bivariate Analysis -->
+                <div class="viz-subsection">
+                    <h4 class="viz-subsection-title">Bivariate Analysis</h4>
+                    <div class="viz-grid">
+                        <div class="viz-card">
+                            <div class="viz-card-header">Stacked Bar Charts - Proportions</div>
+                            <img src="/api/plots/stacked_bar_charts.png" alt="Stacked Bar Charts" class="viz-image" loading="lazy">
+                        </div>
+                        <div class="viz-card">
+                            <div class="viz-card-header">Scatter Plots - Numerical Relationships</div>
+                            <img src="/api/plots/scatter_plots.png" alt="Scatter Plots" class="viz-image" loading="lazy">
+                        </div>
+                        <div class="viz-card">
+                            <div class="viz-card-header">Count Plot with Hue - Categorical Relationships</div>
+                            <img src="/api/plots/count_plot_with_hue.png" alt="Count Plot with Hue" class="viz-image" loading="lazy">
+                        </div>
+                        <div class="viz-card">
+                            <div class="viz-card-header">Severity by Categorical Features</div>
+                            <img src="/api/plots/severity_by_categorical.png" alt="Severity by Categorical" class="viz-image" loading="lazy">
+                        </div>
+                        <div class="viz-card">
+                            <div class="viz-card-header">Age by Severity Boxplot</div>
+                            <img src="/api/plots/age_by_severity_boxplot.png" alt="Age by Severity Boxplot" class="viz-image" loading="lazy">
+                        </div>
+                        <div class="viz-card">
+                            <div class="viz-card-header">Correlation Matrix</div>
+                            <img src="/api/plots/correlation_matrix.png" alt="Correlation Matrix" class="viz-image" loading="lazy">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Multivariate Analysis -->
+                <div class="viz-subsection">
+                    <h4 class="viz-subsection-title">Multivariate Analysis</h4>
+                    <div class="viz-grid">
+                        <div class="viz-card">
+                            <div class="viz-card-header">Pairplot - All Numerical Features</div>
+                            <img src="/api/plots/pairplot.png" alt="Pairplot" class="viz-image" loading="lazy">
+                        </div>
+                        <div class="viz-card">
+                            <div class="viz-card-header">FacetGrid - Weather × Road Type</div>
+                            <img src="/api/plots/facetgrid_weather_road.png" alt="FacetGrid" class="viz-image" loading="lazy">
+                        </div>
+                        <div class="viz-card">
+                            <div class="viz-card-header">Clustered Heatmap - Hierarchical Patterns</div>
+                            <img src="/api/plots/clustered_heatmap.png" alt="Clustered Heatmap" class="viz-image" loading="lazy">
+                        </div>
+                        <div class="viz-card">
+                            <div class="viz-card-header">Parallel Coordinates - High-dimensional Patterns</div>
+                            <img src="/api/plots/parallel_coordinates.png" alt="Parallel Coordinates" class="viz-image" loading="lazy">
+                        </div>
+                        <div class="viz-card">
+                            <div class="viz-card-header">Radar Chart - Feature Profiles by Severity</div>
+                            <img src="/api/plots/radar_chart.png" alt="Radar Chart" class="viz-image" loading="lazy">
+                        </div>
+                    </div>
+                </div>
+                    </div>
+
+                    <!-- Phase 2: Feature Engineering -->
+                    <div id="phase-feature" class="viz-phase">
+                        <h3 class="viz-section-title">PHASE 2: FEATURE ENGINEERING INSIGHTS</h3>
+                <div class="viz-grid">
+                    <div class="viz-card">
+                        <div class="viz-card-header">Line Charts - Time Trends</div>
+                        <img src="/api/plots/line_charts_time_trends.png" alt="Line Charts" class="viz-image" loading="lazy">
+                    </div>
+                    <div class="viz-card">
+                        <div class="viz-card-header">Engineered Features Bar Charts</div>
+                        <img src="/api/plots/engineered_features_bar_charts.png" alt="Engineered Features" class="viz-image" loading="lazy">
+                    </div>
+                    <div class="viz-card">
+                        <div class="viz-card-header">Hour vs Day Heatmap</div>
+                        <img src="/api/plots/hour_day_heatmap.png" alt="Hour Day Heatmap" class="viz-image" loading="lazy">
+                    </div>
+                    <div class="viz-card">
+                        <div class="viz-card-header">KDE Plots - Density Distributions</div>
+                        <img src="/api/plots/kde_plots.png" alt="KDE Plots" class="viz-image" loading="lazy">
+                    </div>
+                    <div class="viz-card">
+                        <div class="viz-card-header">Severity by Hour</div>
+                        <img src="/api/plots/severity_by_hour.png" alt="Severity by Hour" class="viz-image" loading="lazy">
+                    </div>
+                    <div class="viz-card">
+                        <div class="viz-card-header">Accidents by Hour</div>
+                        <img src="/api/plots/accidents_by_hour.png" alt="Accidents by Hour" class="viz-image" loading="lazy">
+                    </div>
+                    </div>
+
+                    <!-- Phase 3: Model Evaluation -->
+                    <div id="phase-model" class="viz-phase">
+                        <h3 class="viz-section-title">PHASE 3: MODEL EVALUATION GRAPHS</h3>
+                <div class="viz-grid">
+                    <div class="viz-card">
+                        <div class="viz-card-header">Confusion Matrix</div>
+                        <img src="/api/plots/confusion_matrix.png" alt="Confusion Matrix" class="viz-image" loading="lazy">
+                    </div>
+                    <div class="viz-card">
+                        <div class="viz-card-header">ROC Curves (One-vs-Rest)</div>
+                        <img src="/api/plots/roc_curves.png" alt="ROC Curves" class="viz-image" loading="lazy">
+                    </div>
+                    <div class="viz-card">
+                        <div class="viz-card-header">Precision-Recall Curves</div>
+                        <img src="/api/plots/precision_recall_curves.png" alt="Precision Recall Curves" class="viz-image" loading="lazy">
+                    </div>
+                    <div class="viz-card">
+                        <div class="viz-card-header">Feature Importance</div>
+                        <img src="/api/plots/feature_importance.png" alt="Feature Importance" class="viz-image" loading="lazy">
+                    </div>
+                    <div class="viz-card">
+                        <div class="viz-card-header">Learning Curves</div>
+                        <img src="/api/plots/learning_curves.png" alt="Learning Curves" class="viz-image" loading="lazy">
+                    </div>
+                    <div class="viz-card">
+                        <div class="viz-card-header">Model Comparison</div>
+                        <img src="/api/plots/model_comparison.png" alt="Model Comparison" class="viz-image" loading="lazy">
+                    </div>
+                    </div>
+                    </div>
+
+                    <!-- Phase 4: Insights & Reporting -->
+                    <div id="phase-insights" class="viz-phase">
+                        <h3 class="viz-section-title">PHASE 4: INSIGHTS & REPORTING GRAPHS</h3>
+                <div class="viz-grid">
+                    <div class="viz-card interactive">
+                        <div class="viz-card-header">Treemap - Severity by Location and Weather</div>
+                        <iframe src="/api/plots/treemap_severity_location_weather.html" class="viz-iframe" loading="lazy"></iframe>
+                    </div>
+                    <div class="viz-card interactive">
+                        <div class="viz-card-header">Sunburst Chart - Severity → Weather → Road Type</div>
+                        <iframe src="/api/plots/sunburst_severity_weather_road.html" class="viz-iframe" loading="lazy"></iframe>
+                    </div>
+                    <div class="viz-card interactive">
+                        <div class="viz-card-header">Bubble Chart - Speed Limit vs Casualties (Size=Driver Age, Color=Severity)</div>
+                        <iframe src="/api/plots/bubble_severity_casualties_speed.html" class="viz-iframe" loading="lazy"></iframe>
+                    </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </main>
+
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="spinner"></div>
+        <div class="loading-text">Processing prediction...</div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
